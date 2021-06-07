@@ -1,0 +1,56 @@
+image: bitbucketpipelines/scala-sbt:scala-2.12
+#image: openjdk:8-jdk
+
+pipelines:
+  default:
+    - step:
+          caches:
+            - sbt
+            - ivy2
+          script:
+            - git submodule update --init
+            - bash ./pipelines/sbt/assembly.sh
+  custom:
+    release-version:
+      - step:
+          caches:
+            - sbt
+            - ivy2
+          script:
+            - git submodule update --init
+            - bash ./pipelines/sbt/release-artefact.sh release
+    release-version-from-develop:
+      - step:
+          caches:
+            - sbt
+            - ivy2
+          script:
+            - git submodule update --init
+            - bash ./pipelines/sbt/release-artefact.sh develop
+    release-hotfix:
+      - step:
+          caches:
+            - sbt
+            - ivy2
+          script:
+            - git submodule update --init
+            - bash ./pipelines/sbt/release-artefact.sh hotfix
+  branches:
+    develop:
+      - step:
+          caches:
+            - sbt
+            - ivy2
+          script:
+            - git submodule update --init
+            - bash ./pipelines/sbt/assembly.sh
+            - bash ./pipelines/sbt/publish.sh
+  tags:
+    '*':
+      - step:
+          caches:
+            - sbt
+            - ivy2
+          script:
+            - git submodule update --init
+            - bash ./pipelines/sbt/publish.sh
